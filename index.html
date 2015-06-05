@@ -1,0 +1,41 @@
+<head>
+  <title>Slack quote of the day</title>
+</head>
+
+<body>
+  <h1>Slack quote of the day</h1>
+
+  {{> index }}
+</body>
+
+<template name="index">
+    <div id="quoteOfTheDay">
+        <h2>"{{ quoteOfTheDay.quote.text }}"</h2>
+        <p>Par <strong>{{ quoteOfTheDay.quote.username }}</strong></p>
+    </div>
+
+    {{> loginButtons}}
+
+    {{> search }}
+</template>
+
+<template name="search">
+  <h2>Search a message</h2>
+  <form>
+      <input type="text" name="search">
+      <input type="submit" value="Search">
+  </form>
+
+  {{> results }}
+</template>
+
+<template name="results">
+    <div id="results">
+      <div class="counts">{{ count }}</div>
+      <br />
+
+      {{#each results}}
+          <li><a class="markAsQuote" href="#">Mark a QOTD</a> <strong>{{username}}</strong> - {{text}}</li>
+      {{/each}}
+    </div>
+</template>
