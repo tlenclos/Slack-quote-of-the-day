@@ -37,11 +37,10 @@ slackMethod = function(options){
                 return response.data.channels;
             }
         } else {
-            throw new Error("Recieved response code " + response.statusCode);
+            throw new Error("Received response code " + response.statusCode);
         }
     };
 }
-
 
 Meteor.methods({
     'slack-search': slackMethod({
@@ -52,6 +51,40 @@ Meteor.methods({
         }
     }),
     'setQuote': function(quote) {
-        QuotesCollection.insert({quote: quote, day: new Date()});
+        if (!Meteor.user()) {
+            throw new Meteor.Error('You must login with slack first');
+        }
+
+        var start = new Date();
+        start.setHours(0);
+        var end = new Date();
+        end.setHours(23);
+        var todayQuote = QuotesCollection.findOne({
+            teamId: Meteor.user().profile.team_id,
+            day: {
+                $gte: start,
+                $lte: end
+            }
+        });
+
+        if (todayQuote) {
+            throw new Meteor.Error('Only one quote is possible per day')
+        }
+
+        QuotesCollection.insert({
+            quote: quote,
+            day: new Date(),
+            teamId: Meteor.user().profile.team_id
+        });
+        return true;
+    },
+    'deleteQuote': function(id) {
+        check(id, String);
+        QuotesCollection.remove({_id: id});
+        return true;
     }
+});
+
+Meteor.publish('quotes', function (teamId) {
+    return QuotesCollection.find({ teamId: teamId });
 });

@@ -1,0 +1,169 @@
+$slackPurple: #4D394B;
+$slackGreen: rgb(76, 150, 137);
+$slackGrey: #E2EBEF;
+$slackLightGrey: rgb(186, 187, 191);
+$slackRed: #ec5c75;
+
+@font-face {
+  font-family: 'Emoji Passthrough';
+  src: url(https://slack.global.ssl.fastly.net/2297/fonts/emoji-passthrough.woff) format('woff');
+  font-weight: 400;
+}
+
+body {
+  font-family: Emoji Passthrough, Lato, appleLogo, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: $slackGrey;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+}
+
+a.fa {
+  text-decoration: none;
+}
+
+.container {
+  padding: 15px 20% 15px 20%;
+}
+
+.header {
+  background-color: $slackPurple;
+  color: rgb(171, 155, 169);
+}
+
+.quote {
+  margin-bottom: 0;
+}
+
+.quote .fa-quote-left, .quote .fa-quote-right {
+  font-size: 1.2em;
+  color: $slackGrey;
+  padding: 5px 10px;
+}
+
+// Controls
+#removeQuote, #seeInSlack {
+  color: $slackGrey;
+  font-size: 2em;
+  position: relative;
+  float: right;
+}
+
+#seeInSlack {
+  right: 20px;
+}
+
+#quoteOfTheDay {
+  background-color: $slackGreen;
+  color: white;
+}
+
+.quote {
+  text-shadow: rgba(0, 0, 0, 0.247059) 0px 1px 1px;
+}
+
+#results {
+  margin-top: 20px;
+}
+
+#results li {
+  list-style-type: none;
+  margin-bottom: 5px;
+}
+
+// LOADER
+$colors:
+hsla(337, 84, 48, 0.75)
+hsla(160, 50, 48, 0.75)
+hsla(190, 61, 65, 0.75)
+hsla( 41, 82, 52, 0.75);
+$size: 2.5em;
+$thickness: 0.5em;
+
+// Calculated variables.
+$lat: ($size - $thickness) / 2;
+$offset: $lat - $thickness;
+
+.loader {
+  position: relative;
+  width: $size;
+  height: $size;
+  transform: rotate(165deg);
+
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: $thickness;
+    height: $thickness;
+    border-radius: $thickness / 2;
+    transform: translate(-50%, -50%);
+  }
+
+  &:before {
+    animation: before 2s infinite;
+  }
+
+  &:after {
+    animation: after 2s infinite;
+  }
+}
+
+@keyframes before {
+  0% {
+    width: $thickness;
+    box-shadow:
+    $lat (-$offset) nth($colors, 1),
+            (-$lat) $offset nth($colors, 3);
+  }
+  35% {
+    width: $size;
+    box-shadow:
+    0 (-$offset) nth($colors, 1),
+    0   $offset  nth($colors, 3);
+  }
+  70% {
+    width: $thickness;
+    box-shadow:
+            (-$lat) (-$offset) nth($colors, 1),
+    $lat $offset nth($colors, 3);
+  }
+  100% {
+    box-shadow:
+    $lat (-$offset) nth($colors, 1),
+            (-$lat) $offset nth($colors, 3);
+  }
+}
+
+@keyframes after {
+  0% {
+    height: $thickness;
+    box-shadow:
+    $offset $lat nth($colors, 2),
+            (-$offset) (-$lat) nth($colors, 4);
+  }
+  35% {
+    height: $size;
+    box-shadow:
+    $offset  0 nth($colors, 2),
+            (-$offset) 0 nth($colors, 4);
+  }
+  70% {
+    height: $thickness;
+    box-shadow:
+    $offset (-$lat) nth($colors, 2),
+            (-$offset) $lat nth($colors, 4);
+  }
+  100% {
+    box-shadow:
+    $offset $lat nth($colors, 2),
+            (-$offset) (-$lat) nth($colors, 4);
+  }
+}
+
