@@ -1,18 +1,22 @@
 <head>
     <title>Slack quote of the day</title>
+    <link rel="icon" sizes="32x32" href="/favicon.png">
 </head>
 
 <body>
+    {{> layout }}
+</body>
+
+<template name="layout">
+    {{> Template.dynamic template=top}}
+    {{> Template.dynamic template=main}}
+</template>
+
+<template name="header">
     <div class="header container">
         <h1>Slack quote of the day</h1>
         {{> loginButtons}}
-
     </div>
-
-    {{> index }}
-</body>
-
-<template name="index">
 
     {{#if loggedUser}}
         {{> quote }}
@@ -20,35 +24,45 @@
 
     <div class="container">
         {{#if loggedUser}}
-            {{> search }}
+            <a id="searchMessage" href="/" class="button button-transparent"><i class="fa fa-search"></i> Search a message</a>
+            <a id="allQuotes" href="/all" class="button button-transparent"><i class="fa fa-list-alt"></i> See all quotes</a>
         {{/if}}
     </div>
 </template>
 
 <template name="quote">
     <div id="quoteOfTheDay" class="container">
-    {{#if quoteOfTheDay}}
-        {{#with quoteOfTheDay}}
-            <a href="" title="Remove this quote" id="removeQuote" class="fa fa-trash-o"></a>
-            <a href="{{ quote.permalink }}" title="See the message in slack" id="seeInSlack"  class="fa fa-slack"></a>
+    {{#if isReady}}
 
-            <h2 class="quote"><i class="fa fa-quote-left"></i>{{ quote.text }}<i class="fa fa-quote-right"></i></h2>
-            <p class="quote">Par <strong>{{ quote.username }}</strong></p>
-        {{/with}}
+        {{#if quoteOfTheDay}}
+            {{#with quoteOfTheDay}}
+                <a href="" title="Remove this quote" id="removeQuote" class="fa fa-trash-o"></a>
+                <a href="{{ quote.permalink }}" title="See the message in slack" id="seeInSlack" class="fa fa-slack" target="_blank"></a>
+
+                <h2 class="quote"><i class="fa fa-quote-left"></i>{{ quote.text }}<i class="fa fa-quote-right"></i></h2>
+                <p class="quote">Par <strong>{{ quote.username }}</strong></p>
+            {{/with}}
+        {{else}}
+            <h2 class="quote"><i class="fa fa-frown-o"></i> No quote for today.</h2>
+        {{/if}}
+
     {{else}}
-        <h2 class="quote"><i class="fa fa-frown-o"></i> No quote for today.</h2>
+        <div class="loader"></div>
     {{/if}}
     </div>
 </template>
 
 <template name="search">
-  <h2>Search a message</h2>
-  <form>
-      <input type="text" name="search" class="field-light" />
-      <button id="submit" class="button-outline olive">Search</button>
-  </form>
+    <div class="container">
+        {{#if loggedUser}}
+            <form>
+                <input type="text" name="search" class="field-light" />
+                <button id="submit" class="button-outline olive">Search</button>
+            </form>
 
-  {{> results }}
+            {{> results }}
+        {{/if}}
+    </div>
 </template>
 
 <template name="results">
@@ -59,12 +73,35 @@
         {{#if loading}}
             <div class="loader"></div>
         {{else}}
+            <ul>
             {{#each results}}
                 <li>
                     <strong>{{username}}</strong><br />
-                    <a class="markAsQuote" href="#">Mark a QOTD</a> {{text}}
+                    {{#if quoteOfTheDay}} {{else}} <a class="markAsQuote" href="#">Mark a QOTD</a> {{/if}}
+                    {{text}}
                 </li>
             {{/each}}
+            </ul>
+        {{/if}}
+    </div>
+</template>
+
+<template name="all">
+    <div class="container">
+        {{#if isReady}}
+            <ul class="quotes">
+                {{#each quotes}}
+                    <li>
+                        <i class="fa fa-quote-left"></i>
+                            <a href="{{ quote.permalink }}" title="See the message in slack" target="_blank">{{ quote.text }}</a>
+                        <i class="fa fa-quote-right"></i>
+                        <br />
+                        <strong>{{ quote.username }}</strong><span class="date">, {{formatDate day}}</span>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <div class="loader"></div>
         {{/if}}
     </div>
 </template>

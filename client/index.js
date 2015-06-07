@@ -1,42 +1,56 @@
 // Loader from http://codepen.io/anon/pen/EjmjLP
-// TODO Better display
-// TODO Add icons of user
-
 Session.set('searchCount', 0);
 Session.set('searchResults', []);
 Session.set('searchLoading', false);
 
-// Subscribe on login
-Deps.autorun(function(){
-    if (Meteor.user()) {
-        Meteor.subscribe('quotes', Meteor.user().profile.team_id);
-    }
-});
-
-UI.registerHelper('loggedUser', function() {
+Template.registerHelper('loggedUser', function() {
     return Meteor.user();
 });
+Template.registerHelper('formatDate', function(date) {
+    return moment(date).format('LL');
+});
+Template.registerHelper('formatTimestamp', function(ts) {
+    return moment.unix(ts.split('.')[0]).format('LLLL');
+});
+Template.registerHelper('quoteOfTheDay', function() {
+    var start = new Date();
+    start.setHours(0);
+    start.setMinutes(0);
+    start.setSeconds(0);
+    var end = new Date();
+    end.setHours(24);
+    end.setMinutes(0);
+    end.setSeconds(0);
+
+    return QuotesCollection.findOne({
+        teamId: Meteor.user().profile.team_id,
+        day: {
+            $gte: start,
+            $lte: end
+        }
+    });
+});
+
+Template.quote.created = function () {
+    var self = this;
+    this.ready = new ReactiveVar(false);
+
+    this.autorun(function () {
+        // Subscribe on login
+        if (Meteor.user()) {
+            self.subscription = Meteor.subscribe('quoteOfTheDay', Meteor.user().profile.team_id);
+            if (self.subscription.ready()) {
+                self.ready.set(true);
+            } else {
+                self.ready.set(false);
+            }
+        }
+    }.bind(this));
+};
 
 Template.quote.helpers({
-    quoteOfTheDay: function() {
-        var start = new Date();
-        start.setHours(0);
-        start.setMinutes(0);
-        start.setSeconds(0);
-        var end = new Date();
-        end.setHours(24);
-        end.setMinutes(0);
-        end.setSeconds(0);
-
-        var quote = QuotesCollection.findOne({
-            teamId: Meteor.user().profile.team_id,
-            day: {
-                $gte: start,
-                $lte: end
-            }
-        });
-
-        return quote;
+    isReady: function () {
+        return Template.instance().ready.get();
     }
 });
 
@@ -60,13 +74,18 @@ Template.search.events({
         event.preventDefault();
         var search = $('input[name=search]').val();
 
-        Session.set('searchLoading', true);
-        Meteor.call('slack-search', {query: search}, function(error, data) {
-            Session.set('searchCount', data.total);
-            Session.set('searchResults', data.matches);
-            Session.set('searchLoading', false)
+        if (search == '') {
+            return;
+        }
 
-            console.log(data.matches[0]);
+        Session.set('searchLoading', true);
+        Meteor.call('slack-search', {query: search, sort: 'timestamp'}, function(error, data) {
+            if (!error) {
+                // TODO Only display message for today
+                Session.set('searchCount', data.total);
+                Session.set('searchResults', data.matches);
+                Session.set('searchLoading', false);
+            }
         });
     },
     'click .markAsQuote': function(event) {
@@ -84,5 +103,19 @@ Template.results.helpers({
     },
     loading: function() {
         return Session.get('searchLoading')
+    }
+});
+
+Template.all.helpers({
+    isReady: function() {
+        return FlowRouter.subsReady("quotes")
+    },
+    quotes: function() {
+        return QuotesCollection.find(
+            {
+                teamId: Meteor.user().profile.team_id
+            },
+            {sort: {day: -1}}
+        );
     }
 });
