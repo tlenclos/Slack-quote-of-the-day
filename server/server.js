@@ -1,5 +1,6 @@
 // TODO Allow to change this hook for a team
-var hookUrl = 'https://hooks.slack.com/services/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';
+// DEV // var hookUrl = 'https://hooks.slack.com/services/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';
+var hookUrl = 'https://hooks.slack.com/services/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';
 
 getAccessToken = function(userId) {
     try {
@@ -104,6 +105,17 @@ Meteor.methods({
         return true;
     }
 });
+
+// Events
+Accounts.onCreateUser(function(options, user) {
+     if (options.profile) {
+         user.profile = options.profile;
+     }
+
+    console.log('new user', user);
+    return user;
+});
+
 
 // Pub / sub
 Meteor.publish('quoteOfTheDay', function (teamId) {

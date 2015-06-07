@@ -36,6 +36,7 @@ a.fa {
 
 .container {
   padding: 15px 20% 15px 20%;
+  max-width: 100%;
 }
 
 .header {
@@ -94,6 +95,15 @@ a.fa {
 
 .date {
   color: $slackDarkGrey;
+}
+
+.img-preview {
+  margin: auto;
+  border: 4px solid $slackPurple;
+}
+
+.text-preview {
+  font-size: 1.2em;
 }
 
 // LOADER
