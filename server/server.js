@@ -1,7 +1,3 @@
-// TODO Allow to change this hook for a team
-// DEV // var hookUrl = 'https://hooks.slack.com/services/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';
-var hookUrl = 'https://hooks.slack.com/services/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';
-
 getAccessToken = function(userId) {
     try {
         var user = Meteor.users.findOne(userId);
@@ -55,7 +51,7 @@ Meteor.methods({
         }
     }),
     'slack-hook': function(text) {
-        HTTP.post(hookUrl, {
+        HTTP.post(Meteor.settings.slackHook, { // TODO Save this url in db and allow to change it in settings
             data: {
                 icon_emoji: "http://quoteoftheday.meteor.com/icon.png",
                 username: 'Quote of the day',
@@ -91,11 +87,9 @@ Meteor.methods({
         });
 
         // Send message to slack channel
-        /*
         Meteor.call('slack-hook', {
-            text: '"'+quote.text+'" par '+quote.username // TODO Allow user to change the format
+            text: '"'+quote.text+'" par <@'+quote.username+'>' // TODO Allow user to change the format
         });
-        */
 
         return true;
     },
