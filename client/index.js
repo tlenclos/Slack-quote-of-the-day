@@ -3,6 +3,20 @@ Session.set('searchCount', 0);
 Session.set('searchResults', []);
 Session.set('searchLoading', false);
 
+var formatMessage = function(message) {
+    return message
+        .replace("<!channel>", "@channel")
+        .replace("<!group>", "@group")
+        .replace("<!everyone>", "@everyone")
+        .replace(/<#(C\w*)>/g, function(match, channelId) {
+            return "#" + channelId; // TODO Replace with channel name
+        }).replace(/<@(U\w*)>/g, function(match, userId) {
+            return "@" + userId; // TODO Replace with username
+        }).replace(/<(\S*)>/g, function(match, link) {
+            return '<a href="'+link+'">'+link+'</a>';
+        });
+}
+
 Template.registerHelper('loggedUser', function() {
     return Meteor.user();
 });
@@ -11,6 +25,9 @@ Template.registerHelper('formatDate', function(date) {
 });
 Template.registerHelper('formatTimestamp', function(ts) {
     return moment.unix(ts.split('.')[0]).format('LLLL');
+});
+Template.registerHelper('formatMessage', function(message) {
+    return formatMessage(message);
 });
 Template.registerHelper('quoteOfTheDay', function() {
     var start = new Date();

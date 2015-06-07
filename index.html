@@ -56,7 +56,7 @@
                 <a href="" title="Remove this quote" id="removeQuote" class="fa fa-trash-o"></a>
                 <a href="{{ quote.permalink }}" title="See the message in slack" id="seeInSlack" class="fa fa-slack" target="_blank"></a>
 
-                <h2 class="quote"><i class="fa fa-quote-left"></i>{{ quote.text }}<i class="fa fa-quote-right"></i></h2>
+                <h2 class="quote"><i class="fa fa-quote-left"></i>{{{ formatMessage quote.text }}}<i class="fa fa-quote-right"></i></h2>
                 <p class="quote">Par <strong>{{ quote.username }}</strong></p>
             {{/with}}
         {{else}}
@@ -95,7 +95,7 @@
                 <li>
                     <strong>{{username}}</strong><br />
                     {{#if quoteOfTheDay}} {{else}} <a class="markAsQuote" href="#">Mark a QOTD</a> {{/if}}
-                    {{text}}
+                    {{{ formatMessage text }}}
                 </li>
             {{/each}}
             </ul>
@@ -110,7 +110,7 @@
                 {{#each quotes}}
                     <li>
                         <i class="fa fa-quote-left"></i>
-                            <a href="{{ quote.permalink }}" title="See the message in slack" target="_blank">{{ quote.text }}</a>
+                            <a href="{{ quote.permalink }}" title="See the message in slack" target="_blank">{{{ formatMessage quote.text }}}</a>
                         <i class="fa fa-quote-right"></i>
                         <br />
                         <strong>{{ quote.username }}</strong><span class="date">, {{formatDate day}}</span>
