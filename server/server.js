@@ -7,11 +7,11 @@ getAccessToken = function(userId) {
     }
 };
 
-slackMethod = function(options){
+slackMethod = function(options) {
     return function(args) {
         args = args || {};
         var token = args.token || getAccessToken(this.userId);
-        if (!token){
+        if (!token) {
             throw new Error("User is not authenticated with Slack");
         }
 
@@ -48,6 +48,13 @@ Meteor.methods({
         url: 'https://slack.com/api/search.messages',
         parser: function (data) {
             return data.messages;
+        }
+    }),
+    'slack-team': slackMethod({
+        method: 'GET',
+        url: 'https://slack.com/api/users.list',
+        parser: function (data) {
+            return data.members;
         }
     }),
     'slack-hook': function(text) {
@@ -102,14 +109,27 @@ Meteor.methods({
 
 // Events
 Accounts.onCreateUser(function(options, user) {
-     if (options.profile) {
-         user.profile = options.profile;
-     }
+    if (options.profile) {
+        user.profile = options.profile;
+    }
 
-    console.log('new user', user);
+    var teamId = user.profile.team_id;
+    var team = TeamCollection.findOne({teamId: teamId});
+    if (!team) {
+        // TODO Fetch team data
+        TeamCollection.insert({id: teamId});
+
+        // Fetch team meber
+        Meteor.call('slack-team', {token: user.services.slack.accessToken}, function (error, members) {
+            _.each(members, function (member) {
+                member.teamId = teamId;
+                TeamMemberCollection.insert(member);
+            });
+        });
+    }
+
     return user;
 });
-
 
 // Pub / sub
 Meteor.publish('quoteOfTheDay', function (teamId) {

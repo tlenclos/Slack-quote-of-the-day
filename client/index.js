@@ -1,3 +1,9 @@
+Accounts.ui.config({
+    requestPermissions: {
+        slack: ['identify', 'read']
+    }
+});
+
 // Loader from http://codepen.io/anon/pen/EjmjLP
 Session.set('searchCount', 0);
 Session.set('searchResults', []);
@@ -15,7 +21,7 @@ var formatMessage = function(message) {
         }).replace(/<(\S*)>/g, function(match, link) {
             return '<a href="'+link+'">'+link+'</a>';
         });
-}
+};
 
 Template.registerHelper('loggedUser', function() {
     return Meteor.user();
@@ -97,12 +103,13 @@ Template.search.events({
 
         Session.set('searchLoading', true);
         Meteor.call('slack-search', {query: search, sort: 'timestamp'}, function(error, data) {
-            if (!error) {
+            if (!error && data) {
                 // TODO Only display message for today
                 Session.set('searchCount', data.total);
                 Session.set('searchResults', data.matches);
-                Session.set('searchLoading', false);
             }
+
+            Session.set('searchLoading', false);
         });
     },
     'click .markAsQuote': function(event) {
