@@ -6,6 +6,9 @@
 - [x] Explanation of the app when user is not logged
 - [ ] Get data of the team and display user icon (https://api.slack.com/methods/users.list)
 - [ ] Settings for the team (slack channel, slack url...)
+- [ ] As a user, I could select multiple message for a quote
+- [ ] Better looking quote day (with date, pagination)
+- [ ] API
 
 Install
 --------
