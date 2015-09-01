@@ -104,6 +104,27 @@ Meteor.methods({
         check(id, String);
         QuotesCollection.remove({_id: id});
         return true;
+    },
+    'fetchTeamMember': function(user) {
+        if (Match.test(user, String)) {
+            user = Meteor.users.findOne(user);
+        }
+
+        var teamId = user.profile.team_id;
+        var team = TeamCollection.findOne({teamId: teamId});
+
+        if (!team) {
+            // TODO Fetch team data
+            TeamCollection.insert({id: teamId});
+
+            // Fetch team meber
+            Meteor.call('slack-team', {token: user.services.slack.accessToken}, function (error, members) {
+                _.each(members, function (member) {
+                    member.teamId = teamId;
+                    TeamMemberCollection.insert(member);
+                });
+            });
+        }
     }
 });
 
@@ -113,21 +134,7 @@ Accounts.onCreateUser(function(options, user) {
         user.profile = options.profile;
     }
 
-    var teamId = user.profile.team_id;
-    var team = TeamCollection.findOne({teamId: teamId});
-    if (!team) {
-        // TODO Fetch team data
-        TeamCollection.insert({id: teamId});
-
-        // Fetch team meber
-        Meteor.call('slack-team', {token: user.services.slack.accessToken}, function (error, members) {
-            _.each(members, function (member) {
-                member.teamId = teamId;
-                TeamMemberCollection.insert(member);
-            });
-        });
-    }
-
+    Meteor.call('fetchTeamMember', user);
     return user;
 });
 
