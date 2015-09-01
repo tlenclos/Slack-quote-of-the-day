@@ -58,7 +58,12 @@ Meteor.methods({
         }
     }),
     'slack-hook': function(text) {
-        HTTP.post(Meteor.settings.slackHook, { // TODO Save this url in db and allow to change it in settings
+        var team = TeamCollection.findOne({id: Meteor.user().profile.team_id});
+        if (!team.webhook) {
+            throw new Meteor.Error('No hook configured for this team');
+        }
+
+        HTTP.post(team.webhook, { // TODO Save this url in db and allow to change it in settings
             data: {
                 icon_emoji: "http://quoteoftheday.meteor.com/icon.png",
                 username: 'Quote of the day',
@@ -100,6 +105,20 @@ Meteor.methods({
 
         return true;
     },
+    'setHook': function(webhook) {
+        check(webhook, String);
+
+        if (!Meteor.user()) {
+            throw new Meteor.Error('You must login with slack first');
+        }
+
+        var team = TeamCollection.findOne({id: Meteor.user().profile.team_id});
+        if (!team) {
+            throw new Meteor.Error('No team associated with this user');
+        }
+
+        TeamCollection.update(team._id, {$set:{webhook: webhook}});
+    },
     'deleteQuote': function(id) {
         check(id, String);
         QuotesCollection.remove({_id: id});
@@ -111,7 +130,7 @@ Meteor.methods({
         }
 
         var teamId = user.profile.team_id;
-        var team = TeamCollection.findOne({teamId: teamId});
+        var team = TeamCollection.findOne({id: teamId});
 
         if (!team) {
             // TODO Fetch team data
@@ -162,6 +181,13 @@ Meteor.publish('quotes', function (teamId) {
     // TODO Security check team id of logged user
     return QuotesCollection.find({
         teamId: teamId
+    });
+});
+
+Meteor.publish('team', function (teamId) {
+    // TODO Security check team id of logged user
+    return TeamCollection.find({
+        id: teamId
     });
 });
 

@@ -5,11 +5,11 @@
 ## TODO
 - [x] Explanation of the app when user is not logged
 - [x] Get data of the team and display user icon (https://api.slack.com/methods/users.list)
-- [ ] Cache subscription
-- [ ] Better looking quote day (with date, pagination)
-- [ ] Settings for the team (slack channel, slack url...)
+- [x] Settings for the team (slack channel, slack url...)
 - [ ] As a user, I could select multiple message for a quote
+- [ ] Better looking quote day (with date, pagination)
 - [ ] Use react instead of blaze
+- [ ] Cache subscription
 - [ ] API
 
 Install

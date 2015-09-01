@@ -24,11 +24,20 @@
         {{> quote }}
     {{/if}}
 
+    {{#unless team.webhook}}
+        <div class="container">
+            <div class="bold center p2 mb2 white bg-red rounded">
+                No webhook is set to send the quote to slack, <a href="https://my.slack.com/services/new/incoming-webhook/">create one with Slack</a>.
+            </div>
+        </div>
+    {{/unless}}
+
     <div class="container">
         {{#if loggedUser}}
             <a id="searchMessage" href="/" class="button button-transparent"><i class="fa fa-search"></i> Search a message</a>
             <a id="allQuotes" href="/quotes" class="button button-transparent"><i class="fa fa-list-alt"></i> See all quotes</a>
             <a id="team" href="/team" class="button button-transparent"><i class="fa fa-users"></i> Team</a>
+
         {{else}}
             <div class="flex mxn2">
                 <div class="flex-auto p2">
@@ -125,20 +134,35 @@
     </div>
 </template>
 
-<template name="members">
+<template name="team">
     <div class="container">
-        {{#if isReady}}
-            <div class="members">
-                {{#each members}}
-                    <div class="member">
-                        <img src="{{ avatar id }}" class="avatar" />
-                        <strong>{{ name }}</strong>
-                    </div>
-                {{/each}}
-            </div>
-        {{else}}
-            <div class="loader"></div>
-        {{/if}}
+        <div class="col col-6">
+            {{> members }}
+        </div>
+        <div class="col col-6">
+            <h2>Parameters</h2>
+            <form id="parameters">
+                <label for="webhook">Slack webhook</label>
+                <input type="text" name="webhook" class="block mb1 field-light col-10" value="{{ team.webhook }}" />
+                <button type="submit" class="button-outline olive">Update </button>
+            </form>
+        </div>
     </div>
+</template>
+
+<template name="members">
+    <h2>Members</h2>
+    {{#if isReady}}
+        <div class="members">
+            {{#each members}}
+                <div class="member">
+                    <img src="{{ avatar id }}" class="avatar" />
+                    <strong>{{ name }}</strong>
+                </div>
+            {{/each}}
+        </div>
+    {{else}}
+        <div class="loader"></div>
+    {{/if}}
 </template>
 

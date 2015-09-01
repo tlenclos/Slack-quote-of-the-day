@@ -62,6 +62,11 @@ Template.registerHelper('avatar', function(memberId) {
     return member ? member.profile.image_48 : null;
 });
 
+Template.registerHelper('team', function() {
+    return TeamCollection.findOne({id: Meteor.user().profile.team_id});
+
+});
+
 Template.quote.created = function () {
     var self = this;
     this.ready = new ReactiveVar(false);
@@ -150,6 +155,13 @@ Template.quotes.helpers({
             {sort: {day: -1}}
         );
     }
+});
+
+Template.team.events({
+   'submit #parameters': function(event) {
+       event.preventDefault();
+       Meteor.call('setHook', event.target.webhook.value);
+   }
 });
 
 Template.members.helpers({
