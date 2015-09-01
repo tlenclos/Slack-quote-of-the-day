@@ -152,7 +152,15 @@ Meteor.publish('quoteOfTheDay', function (teamId) {
 });
 
 Meteor.publish('quotes', function (teamId) {
+    // TODO Security check team id of logged user
     return QuotesCollection.find({
+        teamId: teamId
+    });
+});
+
+Meteor.publish('members', function (teamId) {
+    // TODO Security check team id of logged user
+    return TeamMemberCollection.find({
         teamId: teamId
     });
 });

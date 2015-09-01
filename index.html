@@ -27,7 +27,8 @@
     <div class="container">
         {{#if loggedUser}}
             <a id="searchMessage" href="/" class="button button-transparent"><i class="fa fa-search"></i> Search a message</a>
-            <a id="allQuotes" href="/all" class="button button-transparent"><i class="fa fa-list-alt"></i> See all quotes</a>
+            <a id="allQuotes" href="/quotes" class="button button-transparent"><i class="fa fa-list-alt"></i> See all quotes</a>
+            <a id="team" href="/team" class="button button-transparent"><i class="fa fa-users"></i> Team</a>
         {{else}}
             <div class="flex mxn2">
                 <div class="flex-auto p2">
@@ -103,12 +104,13 @@
     </div>
 </template>
 
-<template name="all">
+<template name="quotes">
     <div class="container">
         {{#if isReady}}
             <ul class="quotes">
                 {{#each quotes}}
                     <li>
+                        <img src="{{ avatar quote.user }}" class="avatar" />
                         <i class="fa fa-quote-left"></i>
                             <a href="{{ quote.permalink }}" title="See the message in slack" target="_blank">{{{ formatMessage quote.text }}}</a>
                         <i class="fa fa-quote-right"></i>
@@ -122,3 +124,21 @@
         {{/if}}
     </div>
 </template>
+
+<template name="members">
+    <div class="container">
+        {{#if isReady}}
+            <div class="members">
+                {{#each members}}
+                    <div class="member">
+                        <img src="{{ avatar id }}" class="avatar" />
+                        <strong>{{ name }}</strong>
+                    </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <div class="loader"></div>
+        {{/if}}
+    </div>
+</template>
+

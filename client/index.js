@@ -53,6 +53,14 @@ Template.registerHelper('quoteOfTheDay', function() {
         }
     });
 });
+Template.registerHelper('avatar', function(memberId) {
+    var member = TeamMemberCollection.findOne({
+        id: memberId,
+        teamId: Meteor.user().profile.team_id
+    });
+
+    return member ? member.profile.image_48 : null;
+});
 
 Template.quote.created = function () {
     var self = this;
@@ -130,7 +138,7 @@ Template.results.helpers({
     }
 });
 
-Template.all.helpers({
+Template.quotes.helpers({
     isReady: function() {
         return FlowRouter.subsReady("quotes")
     },
@@ -140,6 +148,19 @@ Template.all.helpers({
                 teamId: Meteor.user().profile.team_id
             },
             {sort: {day: -1}}
+        );
+    }
+});
+
+Template.members.helpers({
+    isReady: function() {
+        return FlowRouter.subsReady("members")
+    },
+    members: function() {
+        return TeamMemberCollection.find(
+            {
+                teamId: Meteor.user().profile.team_id
+            }
         );
     }
 });
