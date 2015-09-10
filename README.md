@@ -6,8 +6,12 @@
 - [x] Explanation of the app when user is not logged
 - [x] Get data of the team and display user icon (https://api.slack.com/methods/users.list)
 - [x] Settings for the team (slack channel, slack url...)
+- [ ] Fix webhook message displayed on home page (and some other exception)
 - [ ] As a user, I could select multiple message for a quote
 - [ ] Better looking quote day (with date, pagination)
+- [ ] Command /qotd on slack
+- [ ] Vote for the best quotes
+- [ ] User quotes
 - [ ] Use react instead of blaze
 - [ ] Cache subscription
 - [ ] API
