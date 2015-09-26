@@ -1,0 +1,1 @@
+AchievementsCollection.permit(['insert']).apply();

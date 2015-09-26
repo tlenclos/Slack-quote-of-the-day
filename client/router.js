@@ -37,3 +37,12 @@ FlowRouter.route('/achievements', {
         FlowLayout.render('layout', { top: "header", main: "achievements" });
     }
 });
+
+FlowRouter.route('/parameters', {
+    subscriptions: function(params, queryParams) {
+        this.register('team', Meteor.subscribe('team', Meteor.user().profile.team_id));
+    },
+    action: function() {
+        FlowLayout.render('layout', { top: "header", main: "parameters" });
+    }
+});

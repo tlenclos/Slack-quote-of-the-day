@@ -19,7 +19,7 @@
 
 ## TODO JoliAchievements
 - [x] CRUD Achievements
-- [ ] Specific parameter page (only to admin ?)
+- [x] Specific parameter page (only to admin ?)
 - [ ] Add achievement to member
 
 Install

@@ -106,11 +106,15 @@ Meteor.methods({
         return true;
     },
     'setHook': function(webhook) {
-        check(webhook, String);
-
         if (!Meteor.user()) {
             throw new Meteor.Error('You must login with slack first');
         }
+
+        if (!Roles.userIsInRole(Meteor.user(), ['admin'])) {
+            throw new Meteor.Error('Not authorized');
+        }
+
+        check(webhook, String);
 
         var team = TeamCollection.findOne({id: Meteor.user().profile.team_id});
         if (!team) {

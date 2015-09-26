@@ -160,13 +160,6 @@ Template.quotes.helpers({
     }
 });
 
-Template.team.events({
-   'submit #parameters': function(event) {
-       event.preventDefault();
-       Meteor.call('setHook', event.target.webhook.value);
-   }
-});
-
 Template.members.helpers({
     isReady: function() {
         return FlowRouter.subsReady("members")
@@ -220,5 +213,12 @@ AutoForm.hooks({
                 }
             }
         }
+    }
+});
+
+Template.parameters.events({
+    'submit #parameters': function(event) {
+        event.preventDefault();
+        Meteor.call('setHook', event.target.webhook.value);
     }
 });
