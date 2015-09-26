@@ -1,5 +1,5 @@
 <head>
-    <title>Slack quote of the day</title>
+    <title>JoliSlack</title>
     <link rel="icon" sizes="32x32" href="/favicon.png">
 </head>
 
@@ -16,7 +16,7 @@
 
 <template name="header">
     <div class="header container">
-        <h1>Slack quote of the day</h1>
+        <h1>JoliSlack</h1>
         {{> loginButtons}}
     </div>
 
@@ -37,7 +37,7 @@
             <a id="searchMessage" href="/" class="button button-transparent"><i class="fa fa-search"></i> Search a message</a>
             <a id="allQuotes" href="/quotes" class="button button-transparent"><i class="fa fa-list-alt"></i> See all quotes</a>
             <a id="team" href="/team" class="button button-transparent"><i class="fa fa-users"></i> Team</a>
-
+            <a id="achievements" href="/achievements" class="button button-transparent"><i class="fa fa-rocket"></i> Achievements</a>
         {{else}}
             <div class="flex mxn2">
                 <div class="flex-auto p2">
@@ -166,3 +166,29 @@
     {{/if}}
 </template>
 
+<template name="achievements">
+    <div class="container">
+        <h2>Achievements</h2>
+
+        {{#if isReady}}
+            <ul class="achievements">
+                {{#each achievements}}
+                    <li class="achievement">
+                        <strong>{{> editableText collection="achievements" field="name"}}</strong>
+                        {{> editableText collection="achievements" field="description"}}
+                        <a href="" title="Remove this achievement" id="removeAchievement"><i class="fa fa-times"></i></a>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <div class="loader"></div>
+        {{/if}}
+
+        <h3>Add one</h3>
+        {{> achievementForm }}
+    </div>
+</template>
+
+<template name="achievementForm">
+    {{> quickForm collection="AchievementsCollection" id="achievementForm" type="insert" omitFields="teamId"}}
+</template>

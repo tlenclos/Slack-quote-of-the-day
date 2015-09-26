@@ -7,6 +7,7 @@
 - [x] Get data of the team and display user icon (https://api.slack.com/methods/users.list)
 - [x] Settings for the team (slack channel, slack url...)
 - [ ] Fix webhook message displayed on home page (and some other exception)
+- [ ] Fix logged state of the app (see https://kadira.io/academy/meteor-routing-guide/content/implementing-auth-logic-and-permissions)
 - [ ] As a user, I could select multiple message for a quote
 - [ ] Better looking quote day (with date, pagination)
 - [ ] Command /qotd on slack
@@ -15,6 +16,11 @@
 - [ ] Use react instead of blaze
 - [ ] Cache subscription
 - [ ] API
+
+## TODO JoliAchievements
+- [x] CRUD Achievements
+- [ ] Specific parameter page (only to admin ?)
+- [ ] Add achievement to member
 
 Install
 --------

@@ -124,6 +124,11 @@ Meteor.methods({
         QuotesCollection.remove({_id: id});
         return true;
     },
+    'deleteAchievement': function(id) {
+        check(id, String);
+        AchievementsCollection.remove({_id: id});
+        return true;
+    },
     'fetchTeamMember': function(user) {
         if (Match.test(user, String)) {
             user = Meteor.users.findOne(user);
@@ -194,6 +199,13 @@ Meteor.publish('team', function (teamId) {
 Meteor.publish('members', function (teamId) {
     // TODO Security check team id of logged user
     return TeamMemberCollection.find({
+        teamId: teamId
+    });
+});
+
+Meteor.publish('achievements', function (teamId) {
+    // TODO Security check team id of logged user
+    return AchievementsCollection.find({
         teamId: teamId
     });
 });

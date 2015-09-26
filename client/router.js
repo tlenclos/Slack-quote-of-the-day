@@ -1,8 +1,7 @@
 FlowRouter.subscriptions = function() {
-    if (!Meteor.user())
-        return;
-
-    this.register('team', Meteor.subscribe('team', Meteor.user().profile.team_id));
+    if (Meteor.user()) {
+        this.register('team', Meteor.subscribe('team', Meteor.user().profile.team_id));
+    }
 };
 
 FlowRouter.route('/', {
@@ -27,5 +26,14 @@ FlowRouter.route('/team', {
     },
     action: function() {
         FlowLayout.render('layout', { top: "header", main: "team" });
+    }
+});
+
+FlowRouter.route('/achievements', {
+    subscriptions: function(params, queryParams) {
+        this.register('achievements', Meteor.subscribe('achievements', Meteor.user().profile.team_id));
+    },
+    action: function() {
+        FlowLayout.render('layout', { top: "header", main: "achievements" });
     }
 });

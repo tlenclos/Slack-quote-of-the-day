@@ -15,3 +15,7 @@ reactive-var
 meteorhacks:flow-router
 meteorhacks:flow-layout
 momentjs:moment
+aldeed:autoform
+aldeed:collection2
+ongoworks:security
+babrahams:editable-text

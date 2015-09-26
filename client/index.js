@@ -36,6 +36,9 @@ Template.registerHelper('formatMessage', function(message) {
     return formatMessage(message);
 });
 Template.registerHelper('quoteOfTheDay', function() {
+    if (!Meteor.user())
+        return;
+
     var start = new Date();
     start.setHours(0);
     start.setMinutes(0);
@@ -174,5 +177,48 @@ Template.members.helpers({
                 teamId: Meteor.user().profile.team_id
             }
         );
+    }
+});
+
+Template.achievements.events({
+    'click #removeAchievement': function(event, context) {
+        event.preventDefault();
+
+        var deleteConfirmed = confirm('Are you sure to delete this achievement ?');
+        if (deleteConfirmed) {
+            Meteor.call('deleteAchievement', this._id, function(error, result) {
+                if (error) {
+                    // TODO Handle error
+                }
+            });
+        }
+    },
+});
+
+Template.achievements.helpers({
+    isReady: function() {
+        return FlowRouter.subsReady("achievements")
+    },
+    achievements: function() {
+        return AchievementsCollection.find(
+            {
+                teamId: Meteor.user().profile.team_id
+            }
+        );
+    }
+});
+
+AutoForm.hooks({
+    achievementForm: {
+        before: {
+            insert: function (doc, template) {
+                if (Meteor.user()) {
+                    doc.teamId = Meteor.user().profile.team_id;
+                    return doc;
+                } else {
+                    return false;
+                }
+            }
+        }
     }
 });
