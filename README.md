@@ -25,7 +25,7 @@
 - [x] Notify Slack
 – [x] Remove achievement to member
 - [x] Display description in select when unlocking an achievement
-- [ ] In the list display who unlocked it
+- [x] In the list display who unlocked it
 
 Contribute
 ----------

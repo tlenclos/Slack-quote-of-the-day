@@ -167,6 +167,13 @@
                         <strong>{{> editableText collection="achievements" field="name"}}</strong>
                         {{> editableText collection="achievements" field="description"}}
                         <a href="" title="Remove this achievement" id="removeAchievement"><i class="fa fa-times"></i></a>
+
+                        <br>
+                        Unlocked by
+                        {{#each unlockedBy }}
+                            <a href="/member/{{ _id }}">{{ name }}</a>
+                        {{/each}}
+
                     </li>
                 {{/each}}
             </ul>
