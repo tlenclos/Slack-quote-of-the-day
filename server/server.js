@@ -43,6 +43,7 @@ slackMethod = function(options) {
 
 // Methods
 Meteor.methods({
+    // Slack API
     'slack-search': slackMethod({
         method: 'GET',
         url: 'https://slack.com/api/search.messages',
@@ -57,7 +58,7 @@ Meteor.methods({
             return data.members;
         }
     }),
-    'slack-hook': function(text) {
+    'slack-hook': function(text, title) {
         var team = TeamCollection.findOne({id: Meteor.user().profile.team_id});
         if (!team.webhook) {
             throw new Meteor.Error('No hook configured for this team');
@@ -66,10 +67,29 @@ Meteor.methods({
         HTTP.post(team.webhook, { // TODO Save this url in db and allow to change it in settings
             data: {
                 icon_emoji: "http://quoteoftheday.meteor.com/icon.png",
-                username: 'Quote of the day',
+                username: title,
                 text: text
             }
         });
+    },
+    // Quote / Hook
+    'setHook': function(webhook) {
+        if (!Meteor.user()) {
+            throw new Meteor.Error('You must login with slack first');
+        }
+
+        if (!Roles.userIsInRole(Meteor.user(), ['admin'])) {
+            throw new Meteor.Error('Not authorized');
+        }
+
+        check(webhook, String);
+
+        var team = TeamCollection.findOne({id: Meteor.user().profile.team_id});
+        if (!team) {
+            throw new Meteor.Error('No team associated with this user');
+        }
+
+        TeamCollection.update(team._id, {$set:{webhook: webhook}});
     },
     'setQuote': function(quote) {
         if (!Meteor.user()) {
@@ -99,38 +119,14 @@ Meteor.methods({
         });
 
         // Send message to slack channel
-        Meteor.call('slack-hook', {
-            text: '"'+quote.text+'" par <@'+quote.username+'>' // TODO Allow user to change the format
-        });
+        Meteor.call('slack-hook', '"'+quote.text+'" par <@'+quote.username+'>', 'Quote of the day');
 
         return true;
     },
-    'setHook': function(webhook) {
-        if (!Meteor.user()) {
-            throw new Meteor.Error('You must login with slack first');
-        }
-
-        if (!Roles.userIsInRole(Meteor.user(), ['admin'])) {
-            throw new Meteor.Error('Not authorized');
-        }
-
-        check(webhook, String);
-
-        var team = TeamCollection.findOne({id: Meteor.user().profile.team_id});
-        if (!team) {
-            throw new Meteor.Error('No team associated with this user');
-        }
-
-        TeamCollection.update(team._id, {$set:{webhook: webhook}});
-    },
+    // Quotes
     'deleteQuote': function(id) {
         check(id, String);
         QuotesCollection.remove({_id: id});
-        return true;
-    },
-    'deleteAchievement': function(id) {
-        check(id, String);
-        AchievementsCollection.remove({_id: id});
         return true;
     },
     'fetchTeamMember': function(user) {
@@ -153,6 +149,24 @@ Meteor.methods({
                 });
             });
         }
+    },
+    // Achievements
+    'deleteAchievement': function(id) {
+        check(id, String);
+        AchievementsCollection.remove({_id: id});
+        return true;
+    },
+    'unlockAchievement': function(data) {
+        check(data, Schemas.achievementSelect); // TODO Display the error on the front
+        TeamMemberCollection.update({ _id: data.userId },{ $push: { achievements: data.achievement }});
+
+        // Send message to slack channel
+        var achievement = AchievementsCollection.findOne({_id: data.achievement});
+        var user = TeamMemberCollection.findOne({_id: data.userId});
+
+        Meteor.call('slack-hook', 'Par <@'+user.name+'>: "'+achievement.name+'" - '+achievement.description+'', 'Achievement unlocked');
+
+        return true;
     }
 });
 
@@ -204,6 +218,14 @@ Meteor.publish('members', function (teamId) {
     // TODO Security check team id of logged user
     return TeamMemberCollection.find({
         teamId: teamId
+    });
+});
+
+Meteor.publish('member', function (teamId, userId) {
+    // TODO Security check team id of logged user
+    return TeamMemberCollection.find({
+        teamId: teamId,
+        _id: userId
     });
 });
 

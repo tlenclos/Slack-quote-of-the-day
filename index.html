@@ -138,11 +138,16 @@
 <template name="members">
     <h2>Members</h2>
     {{#if isReady}}
-        <div class="members">
+
+        <div class="flex flex-wrap mxn2">
             {{#each members}}
-                <div class="member">
-                    <img src="{{ avatar id }}" class="avatar" />
-                    <strong>{{ name }}</strong>
+                <div class="flex col-6 sm-col-4 md-col-3 lg-col-4 p2">
+                    <div class="p2">
+                        <a href="/member/{{ _id }}">
+                            <img src="{{ avatar id }}" class="avatar" />
+                            <strong>{{ name }}</strong><br>
+                        </a>
+                    </div>
                 </div>
             {{/each}}
         </div>
@@ -169,7 +174,7 @@
             <div class="loader"></div>
         {{/if}}
 
-        <h3>Add one</h3>
+        <h3>Add</h3>
         {{> achievementForm }}
     </div>
 </template>
@@ -187,4 +192,38 @@
             <button type="submit" class="button-outline olive">Update </button>
         </form>
     </div>
+</template>
+
+<template name="member">
+    <div class="container">
+        {{#with member}}
+            <div class="flex mxn2">
+                <div class="col-6 border-box p2">
+                    <h2>{{ name }}</h2>
+                    <img src="{{ avatar id }}" class="avatar" />
+                    {{ profile.real_name }}
+                </div>
+                <div class="col-6 border-box p2">
+                    <h3>Unlocked achievements</h3>
+                    {{> unlockedAchievements }}
+                    {{> addAchievement }}
+                </div>
+            </div>
+        {{/with}}
+    </div>
+</template>
+
+<template name="unlockedAchievements">
+    {{#each achievements}}
+        <li class="achievement">
+            <strong>{{ name }}</strong> {{ description }}
+        </li>
+    {{/each}}
+</template>
+
+<template name="addAchievement">
+    {{#autoForm schema=Schemas.achievementSelect id="achievementSelect" validation="none"}}
+        {{> afQuickField name="achievement" options=achievementsData}}
+        <button type="submit" class="btn btn-primary">Add</button>
+    {{/autoForm}}
 </template>

@@ -29,6 +29,16 @@ FlowRouter.route('/team', {
     }
 });
 
+FlowRouter.route('/member/:userId', {
+    subscriptions: function(params, queryParams) {
+        this.register('member', Meteor.subscribe('member', Meteor.user().profile.team_id, params.userId));
+        this.register('achievements', Meteor.subscribe('achievements', Meteor.user().profile.team_id));
+    },
+    action: function() {
+        FlowLayout.render('layout', { top: "header", main: "member" });
+    }
+});
+
 FlowRouter.route('/achievements', {
     subscriptions: function(params, queryParams) {
         this.register('achievements', Meteor.subscribe('achievements', Meteor.user().profile.team_id));

@@ -20,15 +20,10 @@
 ## TODO JoliAchievements
 - [x] CRUD Achievements
 - [x] Specific parameter page (only to admin ?)
-- [ ] Add achievement to member
-
-Install
---------
-- Copy the file settings.dist.json and fill the `slackHook` parameter
-
-- Run meteor with your settings
-
-`meteor run --settings local.settings.json`
+- [x] Add achievement to member
+- [x] Notify Slack
+– [ ] Remove achievement to member
+- [ ] In the list display who unlocked it
 
 Contribute
 ----------

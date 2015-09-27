@@ -4,6 +4,8 @@ Accounts.ui.config({
     }
 });
 
+Template.registerHelper("Schemas", Schemas);
+
 // Loader from http://codepen.io/anon/pen/EjmjLP
 Session.set('searchCount', 0);
 Session.set('searchResults', []);
@@ -173,6 +175,18 @@ Template.members.helpers({
     }
 });
 
+Template.member.helpers({
+    isReady: function() {
+        return FlowRouter.subsReady("member")
+    },
+    member: function() {
+        return TeamMemberCollection.findOne({
+            teamId: Meteor.user().profile.team_id,
+            _id: FlowRouter.getParam('userId')
+        });
+    }
+});
+
 Template.achievements.events({
     'click #removeAchievement': function(event, context) {
         event.preventDefault();
@@ -201,6 +215,14 @@ Template.achievements.helpers({
     }
 });
 
+Template.addAchievement.helpers({
+    achievementsData: function () {
+        return AchievementsCollection.find().map(function (c) {
+            return {label: c.name, value: c._id};
+        });
+    }
+});
+
 AutoForm.hooks({
     achievementForm: {
         before: {
@@ -212,6 +234,31 @@ AutoForm.hooks({
                     return false;
                 }
             }
+        }
+    },
+    achievementSelect: {
+        onSubmit: function (data) {
+            var self = this;
+            data.userId = FlowRouter.getParam('userId');
+            Meteor.call('unlockAchievement', data, function(error, result) {
+                if (error) {
+                    self.done(new Error(error));
+                } else {
+                    self.done();
+                }
+            });
+
+            return false;
+        }
+    }
+});
+
+Template.unlockedAchievements.helpers({
+    achievements: function() {
+        var member = TeamMemberCollection.findOne({_id: FlowRouter.getParam('userId')});
+
+        if (member.achievements) {
+            return AchievementsCollection.find({_id: {$in: member.achievements}});
         }
     }
 });
