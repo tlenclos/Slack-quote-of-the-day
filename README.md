@@ -7,7 +7,7 @@
 - [x] Get data of the team and display user icon (https://api.slack.com/methods/users.list)
 - [x] Settings for the team (slack channel, slack url...)
 - [x] Fix webhook message displayed on home page (and some other exception)
-- [ ] Fix logged state of the app (see https://kadira.io/academy/meteor-routing-guide/content/implementing-auth-logic-and-permissions)
+- [ ] Fix login (force register with slack, login css...) 
 - [ ] Cache subscription
 - [ ] Fix security for methods
 - [ ] Use react instead of blaze
