@@ -218,7 +218,7 @@ Template.achievements.helpers({
 Template.addAchievement.helpers({
     achievementsData: function () {
         return AchievementsCollection.find().map(function (c) {
-            return {label: c.name, value: c._id};
+            return {label: c.name + ' - ' + c.description, value: c._id};
         });
     }
 });
@@ -261,6 +261,17 @@ Template.unlockedAchievements.helpers({
             return AchievementsCollection.find({_id: {$in: member.achievements}});
         }
     }
+});
+
+Template.unlockedAchievements.events({
+    'click #removeToUser': function(event, context) {
+        event.preventDefault();
+
+        var deleteConfirmed = confirm('Are you sure to remove this achievement ?');
+        if (deleteConfirmed) {
+            Meteor.call('removeAchievementForUser', this._id, FlowRouter.getParam('userId'));
+        }
+    },
 });
 
 Template.parameters.events({

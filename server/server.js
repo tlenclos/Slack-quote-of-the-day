@@ -158,7 +158,7 @@ Meteor.methods({
     },
     'unlockAchievement': function(data) {
         check(data, Schemas.achievementSelect); // TODO Display the error on the front
-        TeamMemberCollection.update({ _id: data.userId },{ $push: { achievements: data.achievement }});
+        TeamMemberCollection.update({ _id: data.userId },{ $addToSet: { achievements: data.achievement }});
 
         // Send message to slack channel
         var achievement = AchievementsCollection.findOne({_id: data.achievement});
@@ -166,6 +166,11 @@ Meteor.methods({
 
         Meteor.call('slack-hook', 'Par <@'+user.name+'>: "'+achievement.name+'" - '+achievement.description+'', 'Achievement unlocked');
 
+        return true;
+    },
+    'removeAchievementForUser': function(achievementId, userId) {
+        // TODO Security check team id of logged user
+        TeamMemberCollection.update({ _id: userId },{ $pull: { achievements: achievementId }});
         return true;
     }
 });
