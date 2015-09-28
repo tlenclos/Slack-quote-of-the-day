@@ -187,6 +187,8 @@ Accounts.onCreateUser(function(options, user) {
 
 // Pub / sub
 Meteor.publish('quoteOfTheDay', function (teamId) {
+    // TODO Security check team id of logged user
+
     var start = new Date();
     start.setHours(0);
     start.setMinutes(0);
@@ -235,6 +237,8 @@ Meteor.publish('member', function (teamId, userId) {
 });
 
 Meteor.publishComposite('achievements', function(teamId) {
+    // TODO Security check team id of logged user
+
     return {
         find: function () {
             return AchievementsCollection.find({
@@ -244,9 +248,6 @@ Meteor.publishComposite('achievements', function(teamId) {
         children: [
             {
                 find: function(achievement) {
-                    // Find post author. Even though we only want to return
-                    // one record here, we use "find" instead of "findOne"
-                    // since this function should return a cursor.
                     return TeamMemberCollection.find({ achievements: {$in: [achievement._id]} });
                 }
             }

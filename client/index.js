@@ -174,9 +174,6 @@ Template.members.helpers({
 });
 
 Template.member.helpers({
-    isReady: function() {
-        return FlowRouter.subsReady("member")
-    },
     member: function() {
         return TeamMemberCollection.findOne({
             teamId: Meteor.user().profile.team_id,
