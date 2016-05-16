@@ -254,3 +254,30 @@ Meteor.publishComposite('achievements', function(teamId) {
         ]
     }
 });
+
+// API
+// Global API configuration
+var Api = new Restivus({
+    prettyJson: true
+});
+
+// Ugly as fu..
+Api.addRoute('quote/:_teamId', {
+    get: function () {
+        var quote = QuotesCollection.findOne({
+            teamId: this.urlParams._teamId // 'T024XPRSS'
+        },
+        {
+            sort: {day: -1}
+        });
+
+        if (!quote) {
+            return  {
+                statusCode: 404,
+                body: {status: 'fail', message: 'Quote not found'}
+            }
+        }
+
+        return quote;
+    }
+});
