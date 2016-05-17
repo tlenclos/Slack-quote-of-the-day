@@ -2,6 +2,17 @@
 
 ![Screenshot](https://github.com/tlenclos/Slack-quote-of-the-day/blob/master/screenshot.png)
 
+## Config
+To enable flower notifications, you should set the DEFAULT_SLACK_TEAM env.
+A flower document should have the following payload:
+
+```
+{
+    "name" : "Daphné",
+    "waterNeedsDayInterval" : 2,
+}
+```
+
 ## TODO
 - [x] Explanation of the app when user is not logged
 - [x] Get data of the team and display user icon (https://api.slack.com/methods/users.list)

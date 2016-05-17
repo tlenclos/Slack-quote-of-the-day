@@ -58,18 +58,24 @@ Meteor.methods({
             return data.members;
         }
     }),
-    'slack-hook': function(teamId, text, title, emoji) {
+    'slack-hook': function(teamId, text, title, emoji, channel) {
         var team = TeamCollection.findOne({id: teamId ? teamId :  Meteor.user().profile.team_id});
-        if (!team.webhook) {
+        if (!team || !team.webhook) {
             throw new Meteor.Error('No hook configured for this team');
         }
 
+        var payload = {
+            icon_emoji: emoji,
+            username: title,
+            text: text
+        };
+
+        if (channel) {
+            payload.channel = channel;
+        }
+
         HTTP.post(team.webhook, {
-            data: {
-                icon_emoji: emoji,
-                username: title,
-                text: text
-            }
+            data: payload
         });
     },
     // Quote / Hook
@@ -282,20 +288,14 @@ Api.addRoute('quote/:_teamId', {
     }
 });
 
-// FLOWER POWER
-// TODO Populate mongodb with data
-if (FlowersCollection.find().count() === 0) {
-    FlowersCollection.insert({ name: 'Youri', waterNeedsDayInterval: 1 });
-    FlowersCollection.insert({ name: 'Daphné', waterNeedsDayInterval: 2 });
-}
 
-// TODO Add cronjob to call slack API when a flower is thirsty
-
+// Flower power
 var callForWaterAndUpdateFlower = function(flower) {
-    Meteor.call('slack-hook', process.env.DEFAULT_SLACK_TEAM, flower.name+' a soif !', 'JoliGarden', ':leaves:');
+    Meteor.call('slack-hook', process.env.DEFAULT_SLACK_TEAM, flower.name+' a soif !', 'JoliGarden', ':leaves:', '#joligarden');
     FlowersCollection.update({ _id: flower._id }, {$set: {latestCallForWater: new Date()}});
 }
 
+// Cronjob to call api when a plant is thirsty
 SyncedCron.add({
     name: 'Send call for water for flowers in slack',
     schedule: function(parser) {
@@ -323,15 +323,4 @@ SyncedCron.add({
     }
 });
 
-
 SyncedCron.start();
-
- var test = "------------\n\
- |          |\n\
- |          |\n\
- |          |_\n\
- ⚘          |_\n\
- ------------";
-
-// TODO Add map
-Meteor.call('slack-hook', process.env.DEFAULT_SLACK_TEAM, 'Test a soif ! \n ```'+test+'```', 'JoliGarden', ':leaves:');
