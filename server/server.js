@@ -299,8 +299,7 @@ var callForWaterAndUpdateFlower = function(flower) {
 SyncedCron.add({
     name: 'Send call for water for flowers in slack',
     schedule: function(parser) {
-        // return recur().on(12).hour();
-        return parser.text('every 10 seconds');
+        return parser.recur().on(12).hour();
     },
     job: function() {
         var flowers = FlowersCollection.find().fetch();
