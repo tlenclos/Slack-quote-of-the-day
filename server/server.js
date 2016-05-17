@@ -64,7 +64,7 @@ Meteor.methods({
             throw new Meteor.Error('No hook configured for this team');
         }
 
-        HTTP.post(team.webhook, { // TODO Save this url in db and allow to change it in settings
+        HTTP.post(team.webhook, {
             data: {
                 icon_emoji: emoji,
                 username: title,
@@ -292,7 +292,7 @@ if (FlowersCollection.find().count() === 0) {
 // TODO Add cronjob to call slack API when a flower is thirsty
 
 var callForWaterAndUpdateFlower = function(flower) {
-    Meteor.call('slack-hook', Meteor.settings.defaultSlackTeam, flower.name+' a soif !', 'JoliGarden', ':leaves:');
+    Meteor.call('slack-hook', process.env.DEFAULT_SLACK_TEAM, flower.name+' a soif !', 'JoliGarden', ':leaves:');
     FlowersCollection.update({ _id: flower._id }, {$set: {latestCallForWater: new Date()}});
 }
 
@@ -326,14 +326,12 @@ SyncedCron.add({
 
 SyncedCron.start();
 
-/*
  var test = "------------\n\
  |          |\n\
  |          |\n\
  |          |_\n\
  ⚘          |_\n\
  ------------";
- */
 
 // TODO Add map
-Meteor.call('slack-hook', 'T024XPRSS', 'Test a soif ! \n ```'+test+'```', 'JoliGarden', ':leaves:');
+Meteor.call('slack-hook', process.env.DEFAULT_SLACK_TEAM, 'Test a soif ! \n ```'+test+'```', 'JoliGarden', ':leaves:');
