@@ -58,15 +58,15 @@ Meteor.methods({
             return data.members;
         }
     }),
-    'slack-hook': function(text, title) {
-        var team = TeamCollection.findOne({id: Meteor.user().profile.team_id});
+    'slack-hook': function(teamId, text, title, emoji) {
+        var team = TeamCollection.findOne({id: teamId ? teamId :  Meteor.user().profile.team_id});
         if (!team.webhook) {
             throw new Meteor.Error('No hook configured for this team');
         }
 
         HTTP.post(team.webhook, { // TODO Save this url in db and allow to change it in settings
             data: {
-                icon_emoji: "http://quoteoftheday.meteor.com/icon.png",
+                icon_emoji: emoji,
                 username: title,
                 text: text
             }
@@ -119,7 +119,7 @@ Meteor.methods({
         });
 
         // Send message to slack channel
-        Meteor.call('slack-hook', '"'+quote.text+'" par <@'+quote.username+'>', 'Quote of the day');
+        Meteor.call('slack-hook', null, '"'+quote.text+'" par <@'+quote.username+'>', 'Quote of the day');
 
         return true;
     },
@@ -164,7 +164,7 @@ Meteor.methods({
         var achievement = AchievementsCollection.findOne({_id: data.achievement});
         var user = TeamMemberCollection.findOne({_id: data.userId});
 
-        Meteor.call('slack-hook', 'Par <@'+user.name+'>: "'+achievement.name+'" - '+achievement.description+'', 'Achievement unlocked');
+        Meteor.call('slack-hook', null, 'Par <@'+user.name+'>: "'+achievement.name+'" - '+achievement.description+'', 'Achievement unlocked');
 
         return true;
     },
@@ -265,7 +265,7 @@ var Api = new Restivus({
 Api.addRoute('quote/:_teamId', {
     get: function () {
         var quote = QuotesCollection.findOne({
-            teamId: this.urlParams._teamId // 'T024XPRSS'
+            teamId: this.urlParams._teamId
         },
         {
             sort: {day: -1}
@@ -281,3 +281,59 @@ Api.addRoute('quote/:_teamId', {
         return quote;
     }
 });
+
+// FLOWER POWER
+// TODO Populate mongodb with data
+if (FlowersCollection.find().count() === 0) {
+    FlowersCollection.insert({ name: 'Youri', waterNeedsDayInterval: 1 });
+    FlowersCollection.insert({ name: 'Daphné', waterNeedsDayInterval: 2 });
+}
+
+// TODO Add cronjob to call slack API when a flower is thirsty
+
+var callForWaterAndUpdateFlower = function(flower) {
+    Meteor.call('slack-hook', Meteor.settings.defaultSlackTeam, flower.name+' a soif !', 'JoliGarden', ':leaves:');
+    FlowersCollection.update({ _id: flower._id }, {$set: {latestCallForWater: new Date()}});
+}
+
+SyncedCron.add({
+    name: 'Send call for water for flowers in slack',
+    schedule: function(parser) {
+        // return recur().on(12).hour();
+        return parser.text('every 10 seconds');
+    },
+    job: function() {
+        var flowers = FlowersCollection.find().fetch();
+        var date = new Date();
+
+        _.each(flowers, function (flower) {
+            if (!flower.latestCallForWater) {
+                // Call slack API
+                callForWaterAndUpdateFlower(flower);
+            } else {
+                // Diff dates
+                var days = (date - flower.latestCallForWater) / (1000*60*60*24);
+                if (days >= flower.waterNeedsDayInterval) {
+                    callForWaterAndUpdateFlower(flower);
+                }
+            }
+        });
+
+        return 'ok';
+    }
+});
+
+
+SyncedCron.start();
+
+/*
+ var test = "------------\n\
+ |          |\n\
+ |          |\n\
+ |          |_\n\
+ ⚘          |_\n\
+ ------------";
+ */
+
+// TODO Add map
+Meteor.call('slack-hook', 'T024XPRSS', 'Test a soif ! \n ```'+test+'```', 'JoliGarden', ':leaves:');
