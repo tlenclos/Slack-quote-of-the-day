@@ -291,7 +291,7 @@ Api.addRoute('quote/:_teamId', {
 
 // Flower power
 var callForWaterAndUpdateFlower = function(flower) {
-    Meteor.call('slack-hook', process.env.DEFAULT_SLACK_TEAM, flower.name+' a soif !', 'JoliGarden', ':leaves:', '#joligarden');
+    Meteor.call('slack-hook', process.env.DEFAULT_SLACK_TEAM, flower.name+' a soif !', 'JoliGarden', ':seedling:', '#joligarden');
     FlowersCollection.update({ _id: flower._id }, {$set: {latestCallForWater: new Date()}});
 }
 
