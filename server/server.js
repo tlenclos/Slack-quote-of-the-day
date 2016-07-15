@@ -310,8 +310,13 @@ SyncedCron.add({
                 // Call slack API
                 callForWaterAndUpdateFlower(flower);
             } else {
+                // Avoid 1 hour offset due to some milliseconds of difference
+                var latestCallForWater = flower.latestCallForWater;
+                latestCallForWater.setSeconds(0);
+                latestCallForWater.setMilliseconds(0);
+                
                 // Diff dates
-                var days = (date - flower.latestCallForWater) / (1000*60*60*24);
+                var days = (date - latestCallForWater) / (1000*60*60*24);
                 if (days >= flower.waterNeedsDayInterval) {
                     callForWaterAndUpdateFlower(flower);
                 }
